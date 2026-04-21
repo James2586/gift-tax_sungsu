@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세무법인 성수의 증여세 계산기</title>
+<style>
+:root{--p:#1a4fa0;--pl:#e8f0fb;--ac:#d63031;--ok:#00897b;--wn:#f57c00;--bd:#d0d7e3;--bg:#f4f6fb;--ca:#fff;--tx:#1a2340;--mu:#6b7a99;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;}
+.hdr{background:linear-gradient(135deg,#1a4fa0,#0d2d6b);color:#fff;padding:28px 0 22px;text-align:center;}
+.hdr h1{font-size:26px;font-weight:700;}
+.hdr h1 span{color:#f0c040;}
+.hdr p{font-size:13px;opacity:.75;margin-top:5px;}
+.wrap{max-width:940px;margin:0 auto;padding:24px 16px 60px;}
+.card{background:var(--ca);border-radius:12px;border:1px solid var(--bd);margin-bottom:20px;overflow:hidden;}
+.ch{background:var(--p);color:#fff;padding:13px 20px;font-size:14px;font-weight:600;}
+.cb{padding:20px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.f{display:flex;flex-direction:column;gap:5px;}
+.f label{font-size:12px;color:var(--mu);font-weight:500;}
+.f input,.f select{border:1px solid var(--bd);border-radius:7px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none;background:#fafbfd;transition:border .15s;}
+.f input:focus,.f select:focus{border-color:var(--p);background:#fff;}
+.ht{font-size:11px;color:var(--mu);margin-top:2px;line-height:1.5;}
+.rg{display:flex;flex-wrap:wrap;gap:8px;}
+.rb{display:flex;align-items:center;gap:5px;cursor:pointer;padding:7px 14px;border:1px solid var(--bd);border-radius:20px;font-size:13px;transition:all .15s;user-select:none;}
+.rb input{display:none;}
+.rb:has(input:checked){background:var(--p);color:#fff;border-color:var(--p);font-weight:600;}
+.rb.warn:has(input:checked){background:var(--ac);border-color:var(--ac);}
+.rb.ok:has(input:checked){background:var(--ok);border-color:var(--ok);}
+.infobox{border-radius:8px;padding:10px 14px;font-size:12px;line-height:1.7;margin-top:8px;}
+.infobox.blue{background:#f0f6ff;border:1px solid #b8d0f5;}
+.infobox.orange{background:#fff8e1;border:1px solid #f9c740;color:#7b5800;}
+.infobox.red{background:#fdecea;border:1px solid #f5c6c6;color:#8b1a1a;}
+.infobox.green{background:#e0f3f1;border:1px solid #a3d9d3;color:#004d45;}
+.pt{width:100%;border-collapse:collapse;}
+.pt th{background:#eef2f8;padding:9px 8px;font-size:12px;color:var(--mu);font-weight:600;text-align:center;border:1px solid var(--bd);}
+.pt td{padding:7px 5px;border:1px solid #eaecf2;text-align:center;vertical-align:middle;}
+.pt td input,.pt td select{width:100%;border:1px solid var(--bd);border-radius:6px;padding:6px 7px;font-size:13px;font-family:inherit;outline:none;background:#fafbfd;}
+.pt td input:focus,.pt td select:focus{border-color:var(--p);}
+.rg3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.rb2{background:var(--pl);border-radius:10px;padding:13px 15px;}
+.rb2.acc{background:#fdecea;}
+.rb2 .rl{font-size:11px;color:var(--mu);margin-bottom:4px;}
+.rb2 .rv{font-size:17px;font-weight:700;color:var(--p);}
+.rb2.acc .rv{color:var(--ac);}
+.bd2{border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-top:4px;}
+.br{display:flex;justify-content:space-between;align-items:center;padding:9px 15px;border-bottom:1px solid #f0f2f6;font-size:13px;}
+.br:last-child{border-bottom:none;font-weight:700;font-size:14px;background:#f8f9fc;}
+.br .bl{color:var(--mu);}
+.br .bv{font-weight:600;}
+.br:last-child .bv{color:var(--ac);font-size:16px;}
+.brs{background:#fafbfd;}
+.brs .bl{padding-left:16px;font-size:12px;}
+.brs .bv{font-size:12px;}
+.dlb{background:linear-gradient(135deg,#fff8e1,#fff3cd);border:1px solid #f9c740;border-radius:9px;padding:13px 16px;display:flex;align-items:center;gap:10px;margin-top:14px;}
+.bdg{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;}
+.bdg-b{background:var(--pl);color:var(--p);}
+.bdg-r{background:#fdecea;color:var(--ac);}
+.btr{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.btn{border:none;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:inherit;transition:all .15s;text-decoration:none;}
+.btn:hover{filter:brightness(1.08);}
+.bp{background:var(--p);color:#fff;}
+.bs{background:var(--ok);color:#fff;}
+.bw{background:var(--wn);color:#fff;}
+.bo{background:#fff;color:var(--p);border:1.5px solid var(--p);}
+.bg2{background:#eee;color:#555;}
+.mo{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:20px;}
+.mo.on{display:flex;align-items:flex-start;justify-content:center;}
+.md{background:#fff;border-radius:14px;max-width:860px;width:100%;margin:auto;overflow:hidden;}
+.mh{background:var(--p);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+.mh h3{font-size:16px;font-weight:700;}
+.mc{padding:24px;}
+.mx{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;}
+.df{border:2px solid #333;font-size:12px;}
+.df-t{text-align:center;font-size:17px;font-weight:700;padding:10px 0 4px;border-bottom:2px solid #333;}
+.df-s{text-align:center;font-size:12px;padding:3px 0 7px;border-bottom:1px solid #333;}
+.df-c{display:flex;justify-content:center;gap:24px;padding:5px;border-bottom:1px solid #333;}
+.df table{width:100%;border-collapse:collapse;}
+.df td,.df th{border:1px solid #888;padding:5px 7px;font-size:12px;vertical-align:middle;}
+.df .dh{background:#eee;font-weight:600;}
+.er h2{font-size:18px;font-weight:700;color:var(--p);margin-bottom:16px;text-align:center;}
+.er .step{background:var(--pl);border-left:4px solid var(--p);border-radius:6px;padding:12px 15px;margin-bottom:12px;line-height:1.7;}
+.er .sn{font-weight:700;color:var(--p);font-size:14px;margin-bottom:4px;}
+.er .hl{color:var(--ac);font-weight:700;}
+.er .tip{background:#fff8e1;border-left:4px solid #f9c740;border-radius:6px;padding:10px 14px;margin-top:12px;font-size:12px;color:#7b5800;}
+.er table{width:100%;border-collapse:collapse;margin:8px 0;}
+.er th{background:var(--p);color:#fff;padding:7px 10px;font-size:12px;}
+.er td{border:1px solid var(--bd);padding:6px 10px;font-size:13px;}
+.er tr:nth-child(even) td{background:#f8f9fc;}
+.er tr.ar td{background:#fff0e0;font-weight:700;}
+.sec{font-size:13px;font-weight:700;color:var(--p);border-left:3px solid var(--p);padding-left:9px;margin:16px 0 10px;}
+.divider{border:none;border-top:1px solid var(--bd);margin:16px 0;}
+@media(max-width:620px){.fg2,.fg3,.rg3{grid-template-columns:1fr;}.btr{flex-direction:column;}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>⚖️ <span>세무법인 성수</span>의 증여세 계산기</h1>
+  <p>상속세 및 증여세법 기준 | 사전증여 합산·세대생략·혼인출산공제 적용 | 증여세과세표준신고서 자동생성</p>
+</div>
+<div class="wrap">
+
+<!-- ① 기본정보 -->
+<div class="card">
+  <div class="ch">👤 기본 정보</div>
+  <div class="cb">
+    <div class="fg2">
+      <div class="f"><label>수증자 성명</label><input type="text" id="rname" placeholder="홍길동"></div>
+      <div class="f"><label>수증자 주민등록번호</label><input type="text" id="rid" placeholder="000000-0000000" maxlength="14" oninput="fmtId(this)"></div>
+      <div class="f"><label>증여자 성명</label><input type="text" id="dname" placeholder="홍아버지"></div>
+      <div class="f">
+        <label>수증자 거주자 여부</label>
+        <div class="rg">
+          <label class="rb ok"><input type="radio" name="res" value="Y" checked onchange="calcAll()"><span>거주자</span></label>
+          <label class="rb warn"><input type="radio" name="res" value="N" onchange="calcAll()"><span>비거주자</span></label>
+        </div>
+        <span class="ht" id="res_hint">거주자: 증여재산공제 적용 가능</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ② 이번 증여 -->
+<div class="card">
+  <div class="ch">🎁 이번 증여 정보</div>
+  <div class="cb">
+
+    <div class="sec">증여 기본 정보</div>
+    <div class="fg2">
+      <div class="f"><label>증여일</label><input type="date" id="gdate" onchange="calcAll()"></div>
+      <div class="f">
+        <label>증여 금액 (원)</label>
+        <input type="text" id="amount" placeholder="0" oninput="fmtNum(this);calcAll()">
+        <span class="ht" id="amt_hint"></span>
+      </div>
+      <div class="f">
+        <label>신고 방법</label>
+        <div class="rg">
+          <label class="rb ok"><input type="radio" name="st" value="no" checked onchange="calcAll()"><span>기한 내 신고 (신고세액공제 3%)</span></label>
+          <label class="rb warn"><input type="radio" name="st" value="yes" onchange="calcAll()"><span>무신고 (가산세 20%)</span></label>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="sec">증여자와의 관계 <span style="font-size:11px;font-weight:400;color:var(--mu);">— 수증자를 기준으로 증여자와의 관계를 선택하세요</span></div>
+    <div class="fg2">
+      <div class="f">
+        <label>관계 선택</label>
+        <div class="rg">
+          <label class="rb"><input type="radio" name="rel" value="lineal_asc" checked onchange="calcAll()"><span>직계존속</span></label>
+          <label class="rb"><input type="radio" name="rel" value="lineal_desc_adult" onchange="calcAll()"><span>직계비속(성년)</span></label>
+          <label class="rb"><input type="radio" name="rel" value="lineal_desc_minor" onchange="calcAll()"><span>직계비속(미성년)</span></label>
+          <label class="rb"><input type="radio" name="rel" value="spouse" onchange="calcAll()"><span>배우자</span></label>
+          <label class="rb"><input type="radio" name="rel" value="other_rel" onchange="calcAll()"><span>기타 친족</span></label>
+          <label class="rb"><input type="radio" name="rel" value="none_rel" onchange="calcAll()"><span>비친족</span></label>
+        </div>
+        <span class="ht" id="ded_hint"></span>
+        <div id="other_rel_hint" class="infobox blue" style="display:none;margin-top:6px;">
+          <b>기타 친족</b>이란 6촌 이내 혈족 및 4촌 이내 인척을 말합니다<br>
+          <span style="color:#555;">(2025.3.14부터는 4촌 이내 혈족과 3촌 이내 인척으로 범위 축소)</span><br>
+          대표 예시: 며느리, 삼촌, 시부모, 형부, 형수 등
+        </div>
+      </div>
+      <div class="f">
+        <label>수증자 성년 여부 <span style="font-size:11px;font-weight:400;">(증여일 기준 만 19세)</span></label>
+        <div class="rg">
+          <label class="rb"><input type="radio" name="age" value="adult" checked onchange="calcAll()"><span>성년 (만 19세 이상)</span></label>
+          <label class="rb"><input type="radio" name="age" value="minor" onchange="calcAll()"><span>미성년 (만 19세 미만)</span></label>
+        </div>
+        <span class="ht" id="age_hint"></span>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="sec">세대생략 및 대습상속 여부</div>
+    <div class="fg2">
+      <div class="f">
+        <label>세대생략 여부 <span style="font-size:11px;font-weight:400;">(조부모→손자녀 등 한 세대 건너뜀)</span></label>
+        <div class="rg">
+          <label class="rb"><input type="radio" name="genSkip" value="N" checked onchange="calcAll()"><span>해당없음</span></label>
+          <label class="rb warn"><input type="radio" name="genSkip" value="Y" onchange="calcAll()"><span>세대생략 해당</span></label>
+        </div>
+        <div id="genskip_hint" class="ht"></div>
+      </div>
+      <div class="f" id="daesup_row" style="display:none;">
+        <label>대습상속 여부 <span style="font-size:11px;font-weight:400;">(세대생략 시 해당 시 할증 면제)</span></label>
+        <div class="rg">
+          <label class="rb"><input type="radio" name="daesup" value="N" checked onchange="calcAll()"><span>해당없음</span></label>
+          <label class="rb ok"><input type="radio" name="daesup" value="Y" onchange="calcAll()"><span>대습상속 해당 (할증 면제)</span></label>
+        </div>
+        <span class="ht">부모가 먼저 사망해 손자가 상속인 지위를 대습하는 경우</span>
+      </div>
+    </div>
+    <div id="genskip_box" class="infobox orange" style="display:none;margin-top:8px;"></div>
+
+    <hr class="divider">
+    <!-- 혼인/출산 공제 (직계존속 성년 시만 표시) -->
+    <div id="mb_section" style="display:none;">
+      <div class="sec">💍 혼인·출산 증여재산공제 <span style="font-size:11px;font-weight:400;color:var(--mu);">(2024.1.1. 이후 증여분, 직계존속→성년 수증자)</span></div>
+      <div class="f">
+        <div class="rg">
+          <label class="rb"><input type="radio" name="mb" value="none" checked onchange="calcAll()"><span>해당없음</span></label>
+          <label class="rb"><input type="radio" name="mb" value="marriage" onchange="calcAll()"><span>혼인공제 적용</span></label>
+          <label class="rb"><input type="radio" name="mb" value="birth" onchange="calcAll()"><span>출산공제 적용</span></label>
+        </div>
+        <div id="mb_detail" class="infobox blue" style="display:none;margin-top:6px;"></div>
+        <span class="ht" id="mb_hint" style="color:var(--ok);font-weight:600;"></span>
+      </div>
+    </div>
+
+    <!-- 신고납부기한 -->
+    <div class="dlb" id="dlbox" style="display:none;margin-top:8px;">
+      <div style="font-size:20px;">📅</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:13px;color:#7b5800;">증여세 신고납부기한</div>
+        <div style="font-size:15px;font-weight:700;color:#b45309;margin-top:2px;" id="dltext">—</div>
+      </div>
+      <span class="bdg bdg-b" id="dlbdg"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ③ 사전증여 -->
+<div class="card">
+  <div class="ch">📋 사전증여 내역 (10년 이내, 최대 4건)</div>
+  <div class="cb">
+    <p style="font-size:12px;color:var(--mu);margin-bottom:12px;">동일인(직계존속의 경우 그 배우자 포함)으로부터 10년 이내 증여받은 금액은 합산 과세됩니다. 납부세액은 자동 계산되며, 당시 신고 방법에 따라 납부세액공제 반영 여부가 결정됩니다.</p>
+    <div style="overflow-x:auto;">
+      <table class="pt">
+        <thead><tr>
+          <th style="width:28px">#</th>
+          <th style="min-width:120px">증여일</th>
+          <th style="min-width:150px">증여자 관계</th>
+          <th style="min-width:140px">증여 금액 (원)</th>
+          <th style="min-width:120px">당시 신고 여부</th>
+          <th style="min-width:140px">납부세액</th>
+          <th style="min-width:160px">납부세액공제 반영액</th>
+        </tr></thead>
+        <tbody id="ptbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ④ 계산결과 -->
+<div class="card">
+  <div class="ch">💰 계산 결과</div>
+  <div class="cb">
+    <div class="rg3">
+      <div class="rb2"><div class="rl">이번 증여금액</div><div class="rv" id="r0">—</div></div>
+      <div class="rb2"><div class="rl">사전증여 합산액</div><div class="rv" id="r1">—</div></div>
+      <div class="rb2"><div class="rl">증여재산 공제</div><div class="rv" id="r2">—</div></div>
+      <div class="rb2"><div class="rl">과세표준</div><div class="rv" id="r3">—</div></div>
+      <div class="rb2"><div class="rl">합산 산출세액</div><div class="rv" id="r4">—</div></div>
+      <div class="rb2 acc"><div class="rl">최종 납부세액</div><div class="rv" id="r5">—</div></div>
+    </div>
+    <div class="bd2">
+      <div class="br"><span class="bl">① 증여재산가액 (이번)</span><span class="bv" id="d0">—</span></div>
+      <div class="br"><span class="bl">② 사전증여재산가액 (10년이내 합산)</span><span class="bv" id="d1">—</span></div>
+      <div class="br"><span class="bl">③ 증여세과세가액 (①+②)</span><span class="bv" id="d2">—</span></div>
+      <div class="br"><span class="bl">④ 증여재산공제 (기본)</span><span class="bv" id="d3">—</span></div>
+      <div class="br brs" id="d3mb_row" style="display:none;"><span class="bl">└ 💍 혼인·출산 증여재산공제 (추가)</span><span class="bv" id="d3mb" style="color:var(--ok);">—</span></div>
+      <div class="br brs" id="d3tot_row" style="display:none;"><span class="bl">└ 공제 합계</span><span class="bv" id="d3tot" style="color:var(--ok);font-weight:700;">—</span></div>
+      <div class="br"><span class="bl">⑤ 과세표준 (③−④공제합계)</span><span class="bv" id="d4">—</span></div>
+      <div class="br"><span class="bl">⑥ 세율 / 누진공제액</span><span class="bv" id="d5">—</span></div>
+      <div class="br"><span class="bl">⑦ 합산 산출세액</span><span class="bv" id="d6">—</span></div>
+      <div class="br brs" id="d_genskip_row" style="display:none;"><span class="bl" id="d_genskip_lbl">└ 세대생략 할증 (30%)</span><span class="bv" id="d_genskip" style="color:var(--ac);">—</span></div>
+      <div class="br brs" id="d_genskip_sum_row" style="display:none;"><span class="bl">└ 세대생략 포함 산출세액 계</span><span class="bv" id="d_genskip_sum" style="color:var(--ac);font-weight:700;">—</span></div>
+      <div class="br brs"><span class="bl">└ 납부세액공제 한도 = 사전증여분까지의 합산 산출세액</span><span class="bv" id="d7">—</span></div>
+      <div class="br brs"><span class="bl">└ 납부세액공제 반영 가능액 (무신고분 제외)</span><span class="bv" id="d8">—</span></div>
+      <div class="br"><span class="bl">⑧ 납부세액공제 (한도·반영액 중 작은 값)</span><span class="bv" id="d9">—</span></div>
+      <div class="br"><span class="bl">⑨ 이번 산출세액 (세대생략 포함 산출세액 계−⑧)</span><span class="bv" id="d10">—</span></div>
+      <div class="br"><span class="bl" id="d11l">⑩ 신고세액공제 (3%)</span><span class="bv" id="d11">—</span></div>
+      <div class="br"><span class="bl">최종 납부세액</span><span class="bv" id="d12">—</span></div>
+    </div>
+    <div id="effbox" style="text-align:right;font-size:12px;color:var(--mu);margin-top:8px;"></div>
+    <div class="btr">
+      <button class="btn bp" onclick="openDecl()">📄 신고서 보기 / 다운로드</button>
+      <button class="btn bs" onclick="openEasy()">📊 쉬운설명보고서</button>
+      <button class="btn bw" onclick="prtResult()">⬇️ 계산결과 PDF 저장</button>
+      <a class="btn bo" href="https://blog.naver.com/cpta0514" target="_blank">💬 세무전문가 상담</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 하단 연락처 카드 -->
+<div style="max-width:940px;margin:0 auto 40px;padding:0 16px;">
+  <div style="background:#fff;border-radius:12px;border:1px solid #d0d7e3;overflow:hidden;box-shadow:0 2px 12px rgba(26,79,160,0.08);">
+    <img src="data:image/png;base64,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" alt="세무법인 성수 연락처" style="width:100%;display:block;">
+  </div>
+  <p style="text-align:center;font-size:11px;color:#6b7a99;margin-top:8px;">본 계산기는 참고용입니다. 정확한 세무 상담은 세무법인 성수로 문의해 주세요.</p>
+</div>
+
+<!-- Modal 신고서 -->
+<div class="mo" id="mo1">
+  <div class="md" style="max-width:860px;">
+    <div class="mh"><h3>📄 증여세과세표준신고 및 자진납부계산서</h3><button class="mx" onclick="cmo('mo1')">✕</button></div>
+    <div class="mc"><div id="dc"></div>
+      <div class="btr" style="margin-top:16px;">
+        <button class="btn bp" onclick="prtDecl()">⬇️ 신고서 PDF 다운로드</button>
+        <button class="btn bg2" onclick="cmo('mo1')">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 쉬운보고서 -->
+<div class="mo" id="mo2">
+  <div class="md" style="max-width:720px;">
+    <div class="mh"><h3>📊 쉬운설명보고서</h3><button class="mx" onclick="cmo('mo2')">✕</button></div>
+    <div class="mc"><div id="ec" class="er"></div>
+      <div class="btr" style="margin-top:16px;">
+        <button class="btn bs" onclick="prtEasy()">⬇️ 보고서 PDF 다운로드</button>
+        <button class="btn bg2" onclick="cmo('mo2')">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== 상수 =====
+// 공제한도: {관계: {adult:금액, minor:금액}}
+const DED={
+  lineal_asc:        {adult:50000000,  minor:20000000},
+  lineal_desc_adult: {adult:50000000,  minor:50000000},
+  lineal_desc_minor: {adult:50000000,  minor:50000000},
+  spouse:            {adult:600000000, minor:600000000},
+  other_rel:         {adult:10000000,  minor:10000000},
+  none_rel:          {adult:0,         minor:0},
+};
+const RDSP={
+  lineal_asc:'직계존속', lineal_desc_adult:'직계비속(성년)', lineal_desc_minor:'직계비속(미성년)',
+  spouse:'배우자', other_rel:'기타 친족', none_rel:'비친족', '':'—'
+};
+const BK=[
+  {limit:100000000,   rate:.10,deduct:0},
+  {limit:500000000,   rate:.20,deduct:10000000},
+  {limit:1000000000,  rate:.30,deduct:60000000},
+  {limit:3000000000,  rate:.40,deduct:160000000},
+  {limit:Infinity,    rate:.50,deduct:460000000},
+];
+
+// ===== 유틸 =====
+function calcTax(b){if(b<=0)return 0;for(const r of BK)if(b<=r.limit)return Math.max(0,b*r.rate-r.deduct);return Math.max(0,b*.5-460000000);}
+function getBk(b){for(const r of BK)if(b<=r.limit)return r;return BK[4];}
+function w(n){return n===null||n===undefined?'—':Math.round(n).toLocaleString('ko-KR')+'원';}
+function ws(n){return Math.round(n).toLocaleString('ko-KR')+'원';}
+function rn(id){return parseInt((document.getElementById(id)?.value||'').replace(/[^0-9]/g,''))||0;}
+function fmtNum(el){const v=el.value.replace(/[^0-9]/g,'');el.value=v?parseInt(v).toLocaleString('ko-KR'):'';}
+function fmtId(el){let v=el.value.replace(/[^0-9]/g,'');if(v.length>6)v=v.slice(0,6)+'-'+v.slice(6,13);el.value=v;}
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function show(id,v){const e=document.getElementById(id);if(e)e.style.display=v?'':'none';}
+
+// ===== 사전증여 행 =====
+function buildRows(){
+  const tb=document.getElementById('ptbody');tb.innerHTML='';
+  for(let i=1;i<=4;i++){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-weight:600;color:var(--mu);">${i}</td>
+      <td><input type="date" id="p${i}d" onchange="calcAll()"></td>
+      <td><select id="p${i}r" onchange="calcAll()">
+        <option value="">관계 선택</option>
+        <option value="lineal_asc">직계존속</option>
+        <option value="lineal_desc_adult">직계비속(성년)</option>
+        <option value="lineal_desc_minor">직계비속(미성년)</option>
+        <option value="spouse">배우자</option>
+        <option value="other_rel">기타 친족</option>
+        <option value="none_rel">비친족</option>
+      </select></td>
+      <td><input type="text" id="p${i}a" placeholder="0" oninput="fmtNum(this);calcAll()"></td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start;">
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;">
+            <input type="radio" name="pst${i}" value="filed" checked onchange="calcAll()"> 기한 내 신고
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;">
+            <input type="radio" name="pst${i}" value="unfiled" onchange="calcAll()"> 무신고
+          </label>
+        </div>
+      </td>
+      <td id="p${i}calc" style="font-weight:600;color:var(--p);font-size:13px;">—</td>
+      <td id="p${i}credit" style="font-weight:600;color:var(--ok);font-size:13px;">—</td>`;
+    tb.appendChild(tr);
+  }
+}
+
+// ===== 메인 계산 =====
+let G={};
+function calcAll(){
+  const rel    = document.querySelector('input[name=rel]:checked')?.value||'lineal_asc';
+  const age    = document.querySelector('input[name=age]:checked')?.value||'adult';
+  const st     = document.querySelector('input[name=st]:checked')?.value||'no';
+  const res    = document.querySelector('input[name=res]:checked')?.value||'Y';
+  const genSkip= document.querySelector('input[name=genSkip]:checked')?.value||'N';
+  const daesup = document.querySelector('input[name=daesup]:checked')?.value||'N';
+  const mb     = document.querySelector('input[name=mb]:checked')?.value||'none';
+  const amount = rn('amount');
+  const gdate  = document.getElementById('gdate').value;
+
+  // ── 거주자 힌트
+  set('res_hint', res==='Y'
+    ? '거주자: 증여재산공제 적용 가능'
+    : '⚠ 비거주자: 증여재산공제 배제 (과세표준 = 증여재산가액 전액)');
+  document.getElementById('res_hint').style.color = res==='Y'?'var(--ok)':'var(--ac)';
+
+  // ── 기타친족 힌트
+  show('other_rel_hint', rel==='other_rel');
+
+  // ── 수증자 성년 힌트 (직계존속 관계 시 공제 달라짐)
+  const ageLabel = age==='adult'?'성년 (만 19세 이상)':'미성년 (만 19세 미만)';
+  set('age_hint','');
+
+  // ── 혼인/출산 공제 섹션 표시 (직계존속이고 성년이고 거주자)
+  const mbAvail = rel==='lineal_asc' && age==='adult' && res==='Y';
+  show('mb_section', mbAvail);
+  if(!mbAvail){
+    const el=document.querySelector('input[name=mb][value="none"]');
+    if(el) el.checked=true;
+  }
+  const mbActive = mbAvail && (mb==='marriage'||mb==='birth');
+  const mbDetail = document.getElementById('mb_detail');
+  if(mbActive){
+    mbDetail.style.display='';
+    mbDetail.innerHTML = mb==='marriage'
+      ? `<b style="color:#1a4fa0;">혼인 증여재산공제</b><br>혼인신고일 <b>전후 각 2년 이내</b>(총 4년) 직계존속으로부터 증여받은 경우 적용<br>2024.1.1. 이후 증여분부터 • 혼인·출산공제 합산 최대 1억원 (중복 불가)<br>기존 5,000만원 + 혼인공제 1억원 = <b style="color:#d63031;">총 1억 5,000만원 공제</b>`
+      : `<b style="color:#1a4fa0;">출산 증여재산공제</b><br>자녀 출생일(입양신고일)로부터 <b>2년 이내</b> 직계존속으로부터 증여받은 경우 적용<br>2024.1.1. 이후 증여분부터 • 혼인·출산공제 합산 최대 1억원 (중복 불가)<br>기존 5,000만원 + 출산공제 1억원 = <b style="color:#d63031;">총 1억 5,000만원 공제</b>`;
+  } else { mbDetail.style.display='none'; }
+  const mbExtra = mbActive ? 100000000 : 0;
+
+  // ── 세대생략 UI
+  show('daesup_row', genSkip==='Y');
+  const gsApply = genSkip==='Y' && daesup==='N'; // 실제 할증 적용 여부
+  const gsBox = document.getElementById('genskip_box');
+  const gsHint = document.getElementById('genskip_hint');
+  if(genSkip==='Y'){
+    gsBox.style.display='';
+    if(daesup==='Y'){
+      gsBox.innerHTML='✅ <b>대습상속 해당</b> → 세대생략 할증세율 적용 <b>면제</b> (부모 사망으로 손자가 상속인 지위 대습)';
+      gsBox.className='infobox green';
+      gsHint.textContent='세대생략 해당, 대습상속으로 할증 면제';
+    } else {
+      const isMinorOver20bil = age==='minor' && amount>2000000000;
+      const rate = isMinorOver20bil ? 0.40 : 0.30;
+      gsBox.innerHTML=`⚠ <b>세대생략 할증 적용</b> → 산출세액의 <b>${(rate*100).toFixed(0)}%</b> 가산<br>`
+        +(isMinorOver20bil?'미성년자이며 증여재산가액 20억원 초과 → <b>40% 할증</b>':'미성년자+증여재산 20억 이하 또는 성년자 → <b>30% 할증</b>');
+      gsBox.className='infobox orange';
+      gsHint.textContent=`세대생략 할증 ${(rate*100).toFixed(0)}% 적용됨`;
+    }
+  } else { gsBox.style.display='none'; gsHint.textContent=''; }
+
+  // ── 공제액 계산
+  const baseDedObj = DED[rel] || {adult:0,minor:0};
+  const baseDed = res==='Y' ? (age==='adult' ? baseDedObj.adult : baseDedObj.minor) : 0;
+  const ded = baseDed + mbExtra;
+
+  // 공제 힌트
+  const dedNames={lineal_asc:'직계존속',lineal_desc_adult:'직계비속(성년)',lineal_desc_minor:'직계비속(미성년)',
+    spouse:'배우자',other_rel:'기타 친족',none_rel:'비친족'};
+  let hintTxt = res==='Y'
+    ? `기본공제: ${ws(baseDed)} (${dedNames[rel]||rel}, 10년 합산)`
+    : '비거주자: 증여재산공제 없음 (0원)';
+  if(mbExtra>0) hintTxt += ` + 혼인·출산공제 1억원 → 합계 ${ws(ded)}`;
+  set('ded_hint', hintTxt);
+  set('mb_hint', mbActive ? `✔ 혼인·출산공제 1억원 추가 → 총 공제 ${ws(ded)}` : '');
+  set('amt_hint', amount>0 ? `입력금액: ${ws(amount)}` : '');
+
+  // ── 신고납부기한
+  if(gdate){
+    const d=new Date(gdate);
+    const dl=new Date(d.getFullYear(),d.getMonth()+3,d.getDate());
+    const today=new Date();today.setHours(0,0,0,0);
+    const diff=Math.ceil((dl-today)/86400000);
+    set('dltext',`${dl.getFullYear()}년 ${dl.getMonth()+1}월 ${dl.getDate()}일 (증여일로부터 3개월 이내)`);
+    const s=document.getElementById('dlbdg');
+    if(diff<0){s.textContent='기한 초과';s.className='bdg bdg-r';}
+    else{s.textContent=`D-${diff}`;s.className=diff<=30?'bdg bdg-r':'bdg bdg-b';}
+    document.getElementById('dlbox').style.display='flex';
+  } else { document.getElementById('dlbox').style.display='none'; }
+
+  // ── 사전증여 차수별 누적 계산
+  // ★ 핵심 규칙 (세법 + 엑셀 검증):
+  //   ① 각 사전증여 차수 납부세액 계산: 그 차수 시점의 공제(baseDed, 혼인공제 미포함)로 누적 계산
+  //   ② 이번 증여 합산 과세: 이번 공제(ded = baseDed + mbExtra)로 계산
+  //   ③ 납부세액공제 한도(②): 합산산출세액 × 합산되는사전증여과표 / 이번합산과표
+  //   ④ 납부세액공제 가능액(①): 이번 증여에 합산되는(10년 이내) 기한내 신고 차수의 마지막 credit
+  //   ⑤ 납부세액공제 = min(①,②)
+  //   ⑥ 10년 이내 여부: 이번 증여일 기준으로 필터
+
+  const rawPrior=[];
+  for(let i=1;i<=4;i++){
+    const pa=rn(`p${i}a`), pr=document.getElementById(`p${i}r`).value;
+    const pd=document.getElementById(`p${i}d`).value;
+    const pst=document.querySelector(`input[name=pst${i}]:checked`)?.value||'filed';
+    if(pa>0&&pr) rawPrior.push({amount:pa,rel:pr,date:pd,filed:pst==='filed',idx:i});
+  }
+
+  // 이번 증여일 기준 10년 커트오프
+  let cutoffDate = null;
+  if(gdate){
+    const gd=new Date(gdate);
+    cutoffDate=new Date(gd.getFullYear()-10, gd.getMonth(), gd.getDate());
+  }
+
+  // 사전증여 차수별 계산 (사전증여 공제 baseDed 적용, 혼인공제 미포함)
+  let cumAmountPrior=0, prevFiledTax=0;
+  const pItems=[];
+  for(let k=0;k<rawPrior.length;k++){
+    const p=rawPrior[k];
+    cumAmountPrior+=p.amount;
+    // 각 차수 당시 공제 = baseDed (혼인공제 없음)
+    const cumBasePrior=Math.max(0, cumAmountPrior - baseDed);
+    const cumTax=calcTax(cumBasePrior);
+    const thisCalcTax=Math.max(0, cumTax - prevFiledTax);
+    const filedCredit=p.filed?Math.round(thisCalcTax*0.03):0;
+    const taxPaid=p.filed ? Math.max(0,thisCalcTax-filedCredit) : thisCalcTax;
+    const creditContrib=p.filed ? cumTax : 0;  // 기한내: 합산산출세액, 무신고: 0
+
+    // 10년 이내 여부 표시
+    const inRange = cutoffDate && p.date ? new Date(p.date)>=cutoffDate : true;
+
+    const calcEl=document.getElementById(`p${p.idx}calc`);
+    const creditEl=document.getElementById(`p${p.idx}credit`);
+    if(calcEl){
+      calcEl.textContent=thisCalcTax>0?ws(taxPaid)+(p.filed?'':' (무신고)')+(inRange?'':' ⚠10년초과'):'0원';
+      calcEl.style.color=p.filed?'var(--p)':'var(--ac)';
+    }
+    if(creditEl){
+      if(!inRange){
+        creditEl.textContent='0원 (10년 초과-제외)'; creditEl.style.color='var(--mu)';
+      } else {
+        creditEl.textContent=p.filed?ws(creditContrib):'0원 (무신고-미반영)';
+        creditEl.style.color=p.filed?'var(--ok)':'var(--ac)';
+      }
+    }
+    pItems.push({amount:p.amount,rel:p.rel,date:p.date,filed:p.filed,inRange,
+      cumTax,thisCalcTax,taxPaid,creditContrib,filedCredit});
+    prevFiledTax=creditContrib;
+  }
+  for(let i=1;i<=4;i++){
+    if(!rawPrior.find(p=>p.idx===i)){
+      const ce=document.getElementById(`p${i}calc`); const cr=document.getElementById(`p${i}credit`);
+      if(ce){ce.textContent='—';ce.style.color='var(--mu)';}
+      if(cr){cr.textContent='—';cr.style.color='var(--mu)';}
+    }
+  }
+
+  // 10년 이내 사전증여 합계
+  const pItems10=pItems.filter(p=>p.inRange);
+  const pTotal=pItems10.reduce((s,p)=>s+p.amount,0);
+  const pTotalAll=pItems.reduce((s,p)=>s+p.amount,0); // 전체(표시용)
+
+  // 납부세액공제 가능액(①) = 10년 이내 합산 차수 중 마지막 기한내 신고의 creditContrib
+  const pPaid = pItems10.length>0
+    ? (pItems10.filter(p=>p.filed).slice(-1)[0]?.creditContrib || 0)
+    : 0;
+
+  // ── 이번 증여 계산 (이번 공제 ded = baseDed + mbExtra 적용)
+  const total=pTotal+amount; // 10년 이내 합산
+  const deduction=Math.min(ded,total);
+  const taxBase=Math.max(0,total-deduction);
+  const combinedTax=calcTax(taxBase);
+  const bk=getBk(taxBase);
+
+  // 세대생략 할증
+  const isMinorOver20bil = age==='minor' && amount>2000000000;
+  const gsRate = gsApply ? (isMinorOver20bil ? 0.40 : 0.30) : 0;
+  const gsSurcharge = Math.round(combinedTax * gsRate);
+  const totalCalcTax = combinedTax + gsSurcharge;
+
+  // 납부세액공제 한도(②) - 갑설 (재산세과-449, 세법 제58조2항)
+  // = 합산산출세액(세대생략포함) × 가산한증여재산 과표 / 합산 과표
+  // 가산한증여재산 과표 = min(사전증여합산액, 합산과표) = 합산과표 - 이번증여분 과표
+  const priorTaxBase = Math.min(pTotal, taxBase); // 사전증여분 과표
+  const creditLimit = taxBase>0 ? Math.round(totalCalcTax * priorTaxBase / taxBase) : 0;
+
+  const creditApplied=Math.min(creditLimit, pPaid);
+
+  const thisTax=Math.max(0, totalCalcTax - creditApplied);
+  const c3=st==='no'?Math.round(thisTax*0.03):0;
+  const pen=st==='yes'?Math.round(thisTax*0.20):0;
+  const finalTax=Math.max(0,thisTax-c3+pen);
+  const eff=amount>0?(finalTax/amount*100).toFixed(2):0;
+  const unfiledCount=pItems10.filter(p=>!p.filed).length;
+  const outOfRangeCount=pItems.filter(p=>!p.inRange).length;
+
+  G={rel,age,st,res,genSkip,daesup,gsApply,gsRate,gsSurcharge,totalCalcTax,
+     mb,mbExtra,amount,pTotal,pPaid,pItems,deduction,baseDed,taxBase,
+     combinedTax,creditLimit,creditApplied,priorTaxBase,thisTax,c3,pen,
+     finalTax,eff,gdate,bk,total,unfiledCount,outOfRangeCount,
+     rname:document.getElementById('rname').value,
+     rid:document.getElementById('rid').value,
+     dname:document.getElementById('dname').value};
+
+  // ── UI 업데이트
+  set('r0',w(amount));set('r1',w(pTotal));set('r2',w(deduction));
+  set('r3',w(taxBase));set('r4',w(totalCalcTax));set('r5',w(finalTax));
+  set('d0',w(amount));
+  set('d1',pTotal>0?'+ '+w(pTotal)+(outOfRangeCount>0?` (${outOfRangeCount}건 10년초과 제외)`:''): w(0));
+  set('d2',w(total));
+  set('d3','− '+w(baseDed));
+  if(mbExtra>0){
+    show('d3mb_row',true);show('d3tot_row',true);
+    set('d3mb','+ '+w(mbExtra));
+    set('d3tot','= − '+w(deduction));
+  } else { show('d3mb_row',false);show('d3tot_row',false); }
+  set('d4',w(taxBase));
+  set('d5',taxBase>0?`${(bk.rate*100).toFixed(0)}% / 누진공제 ${ws(bk.deduct)}`:'—');
+  set('d6',w(combinedTax));
+  if(gsApply){
+    show('d_genskip_row',true);show('d_genskip_sum_row',true);
+    set('d_genskip_lbl',`└ 세대생략 할증 (${(gsRate*100).toFixed(0)}%)`);
+    set('d_genskip','+ '+w(gsSurcharge));
+    set('d_genskip_sum',w(totalCalcTax));
+  } else { show('d_genskip_row',false);show('d_genskip_sum_row',false); }
+  set('d7',pTotal>0?`${w(creditLimit)} (= 합산산출 ${ws(totalCalcTax)} × 사전증여과표 ${ws(priorTaxBase)} / 합산과표 ${ws(taxBase)})`:'사전증여 없음');
+  let d8txt=pTotal>0?(pPaid>0?w(pPaid):'0원'):'해당없음';
+  if(unfiledCount>0) d8txt+=` (무신고 ${unfiledCount}건 제외)`;
+  set('d8',d8txt);
+  set('d9',pTotal>0?'− '+w(creditApplied):'해당없음');
+  set('d10',w(thisTax));
+  set('d11l',st==='no'?'⑩ 신고세액공제 (3%)':'⑩ 무신고 가산세 (20%)');
+  set('d11',st==='no'?'− '+w(c3):'+ '+w(pen));
+  set('d12',w(finalTax));
+  document.getElementById('effbox').textContent=amount>0?`실효세율: ${eff}% (최종납부세액 ÷ 이번 증여금액)`:'';}
+
+// ===== 신고서 =====
+function openDecl(){
+  const r=G;
+  const today=new Date();
+  const ts=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
+  document.getElementById('dc').innerHTML=`
+<div class="df" id="dp">
+<div style="font-size:11px;text-align:right;padding:3px 10px;border-bottom:1px solid #ccc;">■ 상속세 및 증여세법 시행규칙 [별지 제10호서식](2024.03.22 개정)</div>
+<div class="df-t">증여세과세표준신고 및 자진납부계산서</div>
+<div class="df-s">(기본세율 적용 증여재산 신고용)</div>
+<div class="df-c">[✓] 기한 내 신고 &nbsp;[ ] 수정신고 &nbsp;[ ] 기한 후 신고</div>
+<table>
+  <tr><td class="dh" rowspan="3" style="width:46px;text-align:center;">수증자</td><td class="dh">① 성 명</td><td>${r.rname||''}</td><td class="dh">② 주민등록번호</td><td>${r.rid||''}</td><td class="dh">③ 거주구분</td><td>${r.res==='Y'?'[✓] 거주자':'[✓] 비거주자'}</td></tr>
+  <tr><td class="dh">④ 주 소</td><td colspan="5"></td></tr>
+  <tr><td class="dh">⑦ 증여자와의 관계</td><td colspan="2">${RDSP[r.rel]||''}</td><td class="dh">⑤ 전자우편주소</td><td colspan="2"></td></tr>
+  <tr><td class="dh" rowspan="2" style="text-align:center;">증여자</td><td class="dh">⑧ 성 명</td><td>${r.dname||''}</td><td class="dh">⑨ 주민등록번호</td><td></td><td class="dh">⑩ 증여일자</td><td>${r.gdate||''}</td></tr>
+  <tr><td class="dh">⑪ 주 소</td><td colspan="5"></td></tr>
+</table>
+<table style="margin-top:6px;">
+  <tr><td class="dh" style="width:50%">구 분</td><td class="dh" style="width:27%">금 액</td><td class="dh">비 고</td></tr>
+  <tr><td>⑰ 증여재산가액</td><td style="text-align:right;">${ws(r.amount)}</td><td></td></tr>
+  <tr><td>⑱ 비과세재산가액</td><td style="text-align:right;">0원</td><td></td></tr>
+  <tr><td>⑲~㉑ 과세가액 불산입액</td><td style="text-align:right;">0원</td><td></td></tr>
+  <tr><td>㉒ 채무액</td><td style="text-align:right;">0원</td><td></td></tr>
+  <tr><td>㉓ 증여재산가산액 (사전증여 10년 합산)</td><td style="text-align:right;">${ws(r.pTotal)}</td><td></td></tr>
+  <tr style="background:#f0f4ff;"><td><b>㉔ 증여세과세가액</b></td><td style="text-align:right;font-weight:700;">${ws(r.total)}</td><td></td></tr>
+  <tr><td>㉕ 배우자 공제</td><td style="text-align:right;">${r.rel==='spouse'&&r.res==='Y'?ws(r.baseDed):'0원'}</td><td></td></tr>
+  <tr><td>㉖ 직계존속·직계비속 공제</td><td style="text-align:right;">${(r.rel==='lineal_asc'||r.rel==='lineal_desc_adult'||r.rel==='lineal_desc_minor')&&r.res==='Y'?ws(r.baseDed):'0원'}</td><td></td></tr>
+  <tr><td>㉗~㉘ 기타친족 공제</td><td style="text-align:right;">${r.rel==='other_rel'&&r.res==='Y'?ws(r.baseDed):'0원'}</td><td></td></tr>
+  ${r.mbExtra>0?`<tr style="background:#e8f8f0;"><td>💍 혼인·출산 증여재산공제 (${r.mb==='marriage'?'혼인':'출산'})</td><td style="text-align:right;color:#00897b;font-weight:600;">+ ${ws(r.mbExtra)}</td><td>2024.1.1. 이후 적용</td></tr>`:''}
+  ${r.res==='N'?'<tr style="background:#fdecea;"><td>※ 비거주자 – 증여재산공제 전액 배제</td><td style="text-align:right;color:#d63031;">0원</td><td></td></tr>':''}
+  <tr><td>㉜ 감정평가수수료 등</td><td style="text-align:right;">0원</td><td></td></tr>
+  <tr style="background:#f0f4ff;"><td><b>㉝ 과세표준</b></td><td style="text-align:right;font-weight:700;">${ws(r.taxBase)}</td><td></td></tr>
+  <tr><td>㉞ 세율</td><td style="text-align:right;">${r.taxBase>0?(r.bk.rate*100).toFixed(0)+'%':'—'}</td><td></td></tr>
+  <tr><td>㉟ 산출세액</td><td style="text-align:right;">${ws(r.combinedTax)}</td><td></td></tr>
+  <tr><td>㊱ 세대생략가산액 ${r.gsApply?`(${(r.gsRate*100).toFixed(0)}%)`:''}</td><td style="text-align:right;">${r.gsApply?ws(r.gsSurcharge):'0원'}</td><td>${r.gsApply?(r.gsRate===0.40?'미성년+20억 초과':'30% 할증'):''}</td></tr>
+  <tr style="background:#f0f4ff;"><td><b>㊲ 산출세액 계</b></td><td style="text-align:right;font-weight:700;">${ws(r.totalCalcTax)}</td><td></td></tr>
+  <tr><td>㊳ 이자상당액</td><td style="text-align:right;">0원</td><td></td></tr>
+  <tr><td>㊷ 납부세액공제 (사전증여 기납부세액)</td><td style="text-align:right;">− ${ws(r.creditApplied)}</td><td>한도: ${ws(r.creditLimit)}</td></tr>
+  <tr><td>${r.st==='no'?'㊸ 신고세액공제 (3%)':'㊸ 무신고 가산세 (20%)'}</td><td style="text-align:right;">${r.st==='no'?'− '+ws(r.c3):'+ '+ws(r.pen)}</td><td></td></tr>
+  <tr style="background:#fff0f0;"><td><b>㊻ 자진납부할 세액</b></td><td style="text-align:right;font-weight:700;font-size:15px;color:#d63031;">${ws(Math.max(0,r.finalTax))}</td><td></td></tr>
+</table>
+<div style="text-align:right;padding:12px 16px 6px;font-size:12px;">
+  위 내용을 충분히 검토하고 신고인이 알고 사실을 그대로 적었음을 확인합니다.<br><br>
+  ${ts} &nbsp;&nbsp;&nbsp; 신고인: ${r.rname||''} <span style="font-size:11px;">(서명 또는 인)</span>
+</div>
+<div style="text-align:center;font-weight:700;padding:8px;border-top:2px solid #333;font-size:14px;">세무서장 귀하</div>
+</div>`;
+  document.getElementById('mo1').classList.add('on');
+}
+
+// ===== 쉬운보고서 =====
+function openEasy(){
+  const r=G;
+  const today=new Date();
+  const ts=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
+  const bkRows=BK.map((b,i)=>{
+    const lbl=['1억원 이하','1억~5억원','5억~10억원','10억~30억원','30억원 초과'][i];
+    const isA=r.taxBase>0&&(i===0?r.taxBase<=b.limit:(r.taxBase>BK[i-1].limit&&r.taxBase<=b.limit));
+    return `<tr${isA?' class="ar"':''}><td>${lbl}</td><td>${(b.rate*100).toFixed(0)}%</td><td>${b.deduct.toLocaleString()}원</td><td>${isA?'← 적용':''}</td></tr>`;
+  }).join('');
+  const dlStr=r.gdate?(()=>{const d=new Date(r.gdate);const dl=new Date(d.getFullYear(),d.getMonth()+3,d.getDate());return `${dl.getFullYear()}년 ${dl.getMonth()+1}월 ${dl.getDate()}일`;})():'—';
+  document.getElementById('ec').innerHTML=`
+<h2>📋 증여세 쉬운설명보고서</h2>
+<p style="text-align:center;color:#6b7a99;font-size:12px;margin-bottom:20px;">작성일: ${ts}</p>
+<div class="step"><div class="sn">STEP 1. 증여 현황</div>
+  <b>${r.rname||'수증자'}</b>님은 <b>${RDSP[r.rel]}</b>으로부터 <span class="hl">${ws(r.amount)}</span>을 증여받았습니다.${r.gdate?` (증여일: ${r.gdate})`:''}
+  ${r.res==='N'?'<br><span style="color:#d63031;">※ 비거주자 → 증여재산공제 배제</span>':''}
+  ${r.pTotal>0?`<br>10년 이내 사전증여 합계: <b>${ws(r.pTotal)}</b>`:''}
+  ${r.gsApply?`<br>⚠ <b>세대생략 할증 ${(r.gsRate*100).toFixed(0)}% 적용</b>`:''}
+  ${r.gsApply&&r.daesup==='Y'?'<br>✅ 대습상속 해당 → 할증 면제':''}
+</div>
+<div class="step"><div class="sn">STEP 2. 증여재산공제</div>
+  ${r.res==='Y'?`${RDSP[r.rel]} 기준 기본공제: <span class="hl">${ws(r.baseDed)}</span> (10년 합산 기준)
+  ${r.mbExtra>0?`<br>💍 ${r.mb==='marriage'?'혼인':'출산'}증여재산공제: <span class="hl">+ ${ws(r.mbExtra)}</span> → 합계 <span class="hl" style="font-size:15px;">${ws(r.deduction)}</span>`:''}`:
+  '<span style="color:#d63031;">비거주자 → 증여재산공제 없음 (0원)</span>'}
+</div>
+<div class="step"><div class="sn">STEP 3. 과세표준 계산</div>
+  합산 증여재산 <b>${ws(r.total)}</b> − 공제 <b>${ws(r.deduction)}</b> = 과세표준 <span class="hl">${ws(r.taxBase)}</span>
+</div>
+<div class="step"><div class="sn">STEP 4. 세율 및 합산 산출세액</div>
+  <table><thead><tr><th>과세표준 구간</th><th>세율</th><th>누진공제</th><th></th></tr></thead><tbody>${bkRows}</tbody></table>
+  합산 산출세액: <span class="hl">${ws(r.combinedTax)}</span>
+  ${r.gsApply?`<br>+ 세대생략 할증 (${(r.gsRate*100).toFixed(0)}%): <span class="hl">+ ${ws(r.gsSurcharge)}</span><br>= 세대생략 포함 산출세액 계: <span class="hl" style="font-size:15px;">${ws(r.totalCalcTax)}</span>`:''}
+</div>
+<div class="step"><div class="sn">STEP 5. 납부세액공제 (사전증여 기납부세액 공제)</div>
+  ${r.pTotal>0?`납부세액공제 한도 = 사전증여분까지의 합산 산출세액: <b>${ws(r.creditLimit)}</b><br>
+    납부세액공제 반영 가능액 (기한내 신고분): <b>${ws(r.pPaid)}</b>
+    ${r.unfiledCount>0?`<br><span style="color:var(--ac);">※ 무신고 ${r.unfiledCount}건 납부세액공제 제외</span>`:''}
+    <br>실제 납부세액공제: <span class="hl">− ${ws(r.creditApplied)}</span>`:'사전증여 없음 → 납부세액공제 해당없음'}
+</div>
+<div class="step"><div class="sn">STEP 6. 최종 납부세액</div>
+  이번 산출세액 <b>${ws(r.thisTax)}</b>
+  ${r.st==='no'?` − 신고세액공제(3%) <b>${ws(r.c3)}</b>`:` + 무신고가산세(20%) <b>${ws(r.pen)}</b>`}<br>
+  <span class="hl" style="font-size:16px;">최종 납부세액: ${ws(Math.max(0,r.finalTax))}</span><br>
+  실효세율: <b>${r.eff}%</b>
+</div>
+${r.gdate?`<div class="step" style="background:#e0f3f1;border-left-color:#00897b;">
+  <div class="sn" style="color:#00897b;">⏰ 신고납부기한</div>
+  증여일(${r.gdate})로부터 3개월 이내: <span class="hl" style="color:#00897b;">${dlStr}</span><br>
+  기한 내 신고 시 산출세액의 3% 세액공제 혜택 있음
+</div>`:''}
+<div class="tip">⚠️ 본 보고서는 참고용입니다. 실제 납부세액은 반드시 세무사 상담을 통해 확인하시기 바랍니다.<br>
+세무전문가 상담: <a href="https://blog.naver.com/cpta0514" target="_blank">https://blog.naver.com/cpta0514</a></div>`;
+  document.getElementById('mo2').classList.add('on');
+}
+
+// ===== PDF (Blob+iframe) =====
+function printViaBlob(title,body,css){
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+<style>@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;font-size:13px;margin:28px;color:#1a2340;}${css||''}</style>
+</head><body>${body}</body></html>`;
+  const old=document.getElementById('__pf');if(old)old.remove();
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const iframe=document.createElement('iframe');
+  iframe.id='__pf';
+  iframe.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';
+  iframe.src=url;
+  document.body.appendChild(iframe);
+  iframe.onload=function(){
+    try{iframe.contentWindow.focus();iframe.contentWindow.print();}
+    catch(e){const w=window.open(url,'_blank');if(!w)alert('PDF 저장을 위해 브라우저 팝업을 허용해 주세요.');}
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  };
+}
+
+function prtResult(){
+  const r=G;
+  if(!r||!r.amount){alert('먼저 증여 금액을 입력해 주세요.');return;}
+  const today=new Date();
+  const ts=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+  const dlStr=r.gdate?(()=>{const d=new Date(r.gdate);const dl=new Date(d.getFullYear(),d.getMonth()+3,d.getDate());return `${dl.getFullYear()}년 ${dl.getMonth()+1}월 ${dl.getDate()}일`;})():'—';
+  let priorRows='';
+  if(r.pItems&&r.pItems.length>0){
+    priorRows='<tr><th colspan="4">사전증여 내역</th></tr><tr><td style="background:#eef2f8;font-weight:600;">차수</td><td style="background:#eef2f8;font-weight:600;">증여금액</td><td style="background:#eef2f8;font-weight:600;">신고여부</td><td style="background:#eef2f8;font-weight:600;">납부세액</td></tr>';
+    r.pItems.forEach((p,i)=>{priorRows+=`<tr><td>${i+1}차 (${p.date||''})</td><td>${ws(p.amount)}</td><td>${p.filed?'기한내 신고':'무신고'}</td><td>${ws(p.taxPaid)}</td></tr>`;});
+  }
+  printViaBlob('증여세 계산결과 – 세무법인 성수의 증여세 계산기',
+    `<h1 style="font-size:20px;text-align:center;margin-bottom:4px;">⚖️ 세무법인 성수의 증여세 계산결과</h1>
+     <p style="text-align:center;color:#888;font-size:12px;margin-bottom:20px;">작성일: ${ts}</p>
+     <table>
+       <tr><th colspan="2">기본 정보</th></tr>
+       <tr><td>수증자</td><td>${r.rname||'—'} (${r.res==='Y'?'거주자':'비거주자'}, ${r.age==='adult'?'성년':'미성년'})</td></tr>
+       <tr><td>증여자 / 관계</td><td>${r.dname||'—'} / ${RDSP[r.rel]}</td></tr>
+       <tr><td>증여일</td><td>${r.gdate||'—'}</td></tr>
+       <tr><td>신고납부기한</td><td>${dlStr}</td></tr>
+       <tr><td>세대생략 여부</td><td>${r.gsApply?`해당 (${(r.gsRate*100).toFixed(0)}% 할증)`:'해당없음'}</td></tr>
+       ${priorRows}
+       <tr><th colspan="2">계산 내역</th></tr>
+       <tr><td>① 증여재산가액 (이번)</td><td>${ws(r.amount)}</td></tr>
+       <tr><td>② 사전증여재산가액</td><td>${ws(r.pTotal)}</td></tr>
+       <tr><td>③ 증여세과세가액</td><td>${ws(r.total)}</td></tr>
+       <tr><td>④ 증여재산공제</td><td>− ${ws(r.deduction)}</td></tr>
+       <tr><td>⑤ 과세표준</td><td>${ws(r.taxBase)}</td></tr>
+       <tr><td>⑥ 합산 산출세액</td><td>${ws(r.combinedTax)}</td></tr>
+       ${r.gsApply?`<tr><td>세대생략 할증 (${(r.gsRate*100).toFixed(0)}%)</td><td>+ ${ws(r.gsSurcharge)}</td></tr>
+       <tr><td>산출세액 계 (세대생략 포함)</td><td>${ws(r.totalCalcTax)}</td></tr>`:''}
+       <tr><td>⑦ 납부세액공제</td><td>− ${ws(r.creditApplied)}</td></tr>
+       <tr><td>⑧ 이번 산출세액</td><td>${ws(r.thisTax)}</td></tr>
+       <tr><td>${r.st==='no'?'⑨ 신고세액공제 (3%)':'⑨ 무신고 가산세 (20%)'}</td><td>${r.st==='no'?'− '+ws(r.c3):'+ '+ws(r.pen)}</td></tr>
+       <tr class="fin"><td>최종 납부세액</td><td>${ws(Math.max(0,r.finalTax))}</td></tr>
+       <tr><td>실효세율</td><td>${r.eff}%</td></tr>
+     </table>
+     <p style="font-size:11px;color:#888;text-align:center;margin-top:24px;">본 계산결과는 참고용입니다 | 세무전문가 상담: https://blog.naver.com/cpta0514</p>`,
+    `table{width:100%;border-collapse:collapse;}td,th{border:1px solid #d0d7e3;padding:8px 10px;}
+     th{background:#1a4fa0;color:#fff;text-align:left;}
+     tr:nth-child(even) td{background:#f8f9fc;}.fin td{font-weight:700;font-size:15px;color:#d63031;background:#fff0f0!important;}`);
+}
+
+function prtDecl(){
+  const el=document.getElementById('dp');
+  if(!el){alert('신고서를 먼저 열어주세요.');return;}
+  printViaBlob('증여세과세표준신고서',el.outerHTML,
+    `.df{border:2px solid #333;}.df table{width:100%;border-collapse:collapse;}
+     .df td,.df th{border:1px solid #888;padding:5px 7px;font-size:12px;vertical-align:middle;}
+     .dh{background:#eee;font-weight:600;}.df-t{text-align:center;font-size:17px;font-weight:700;padding:10px 0 4px;border-bottom:2px solid #333;}
+     .df-s{text-align:center;font-size:12px;padding:3px 0 7px;border-bottom:1px solid #333;}
+     .df-c{text-align:center;padding:5px;border-bottom:1px solid #333;}`);
+}
+
+function prtEasy(){
+  const el=document.getElementById('ec');
+  if(!el){alert('보고서를 먼저 열어주세요.');return;}
+  printViaBlob('증여세 쉬운설명보고서',el.innerHTML,
+    `h2{font-size:18px;text-align:center;margin-bottom:16px;color:#1a4fa0;}
+     .step{background:#e8f0fb;border-left:4px solid #1a4fa0;border-radius:6px;padding:12px 15px;margin-bottom:12px;line-height:1.7;}
+     .sn{font-weight:700;color:#1a4fa0;margin-bottom:4px;font-size:14px;}.hl{color:#d63031;font-weight:700;}
+     .tip{background:#fff8e1;border-left:4px solid #f9c740;padding:10px 14px;font-size:12px;margin-top:12px;}
+     .ar td{background:#fff0e0!important;font-weight:700;}
+     table{width:100%;border-collapse:collapse;margin:8px 0;}
+     th{background:#1a4fa0;color:#fff;padding:7px 10px;font-size:12px;}
+     td{border:1px solid #d0d7e3;padding:6px 10px;}
+     tr:nth-child(even) td{background:#f8f9fc;}`);
+}
+
+function cmo(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.mo').forEach(m=>{m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');});});
+
+// 초기화
+buildRows();
+document.getElementById('gdate').valueAsDate=new Date();
+calcAll();
+</script>
+</body>
+</html>
